@@ -1,4 +1,6 @@
-{
+'use strict';
+
+module.exports = {
   "ACI data": {
     "bytes": 2,
     "code": "CE",
@@ -1194,4 +1196,4 @@
     "code": "E3",
     "desc": "Exchange stack Top with HL"
   }
-}
+};

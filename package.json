@@ -1,0 +1,26 @@
+{
+  "name": "asm8085",
+  "version": "0.0.0",
+  "description": "Two pass assembler for 8085",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bogas04/asm8085.git"
+  },
+  "keywords": [
+    "asm",
+    "8085",
+    "assembler",
+    "instruction",
+    "set"
+  ],
+  "author": "bogas04",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bogas04/asm8085/issues"
+  },
+  "homepage": "https://github.com/bogas04/asm8085#readme"
+}
