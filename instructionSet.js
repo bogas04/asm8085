@@ -2,7 +2,7 @@
 
 module.exports = {
   dataInstructions: ['ACI', 'ADI', 'ANI', 'MVI', 'CPI', 'ORI', 'SBI', 'SUI', 'XRI', 'LXI'],
-  labelInstructions: ['JMP', 'JC', 'JM', 'JNC', 'JNZ', 'JP', 'JPE', 'JPO', 'JZ', 'CALL', 'CC', 'CM', 'CNC', 'CNZ', 'CP', 'CPE', 'CPO', 'CZ'],
+  labelInstructions: ['JMP', 'JC', 'JM', 'JNC', 'JNZ', 'JP', 'JPE', 'JPO', 'JZ', 'CALL', 'CC', 'CM', 'CNC', 'CNZ', 'CP', 'CPE', 'CPO', 'CZ', 'LDA', 'LHLD', 'SHLD', 'STA'],
   'ACI data': {
     'size': 2,
     'code': 'CE',

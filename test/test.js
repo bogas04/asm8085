@@ -1,5 +1,6 @@
 var assert = require('assert');
 var asm = require('../index');
+var fs = require('fs');
 
 describe('asm', () => {
   describe('isLabel()', () => {
@@ -89,6 +90,14 @@ describe('asm', () => {
     });
     it('should return 3 for "CALL MULTIPLY"', () => {
       assert(asm.getInstructionSize('CALL MULTIPLY') === 3);
+    });
+  });
+  describe('assemble()', () => {
+    it('should assemble add8bit.asm (basic program) correctly', () => {
+      assert(asm.assemble(fs.readFileSync('programs/add8bit.asm', 'utf8')).trim() === fs.readFileSync('test/add8bit.asm', 'utf8').trim());
+    });
+    it('should assemble bubbleSort.asm (with labels, jumps etc) correctly', () => {
+      assert(asm.assemble(fs.readFileSync('programs/bubbleSort.asm', 'utf8')).trim() === fs.readFileSync('test/bubbleSort.asm', 'utf8').trim());
     });
   });
 });
