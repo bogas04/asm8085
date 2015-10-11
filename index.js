@@ -3,10 +3,10 @@
 /* Phases:
  * Decomment
  * First pass: 
+ *   - Bloat each statement into hex bytes
  *   - Assign addresses to each line keeping their number of bytes in mind.
  *   - Perform some directives
  * Second pass: 
- *   - Bloat each statement into hex bytes
  *   - Replace labels with actual address
  */
 
@@ -22,14 +22,18 @@ asm.isValidInstruction = codeLine => asm.sanitize(codeLine) in iSet;
 
 asm.removeLabel = codeLine => codeLine.replace(/[a-zA-Z]+:/g, '').trim();
 
+/* Converts a code line to formal instruction format as per Instruction Set */
 asm.sanitize = (codeLine) => asm.labelToTag(asm.numberToTag(asm.removeLabel(codeLine))).trim();
 
 asm.isDataInstruction = codeLine => iSet.dataInstructions.indexOf(asm.getInstructionName(codeLine)) > -1;
 
 asm.isLabelInstruction = codeLine => iSet.labelInstructions.indexOf(asm.getInstructionName(codeLine)) > -1;
 
+/* Converts a number to 'data' or 'address' tag which is used in formal instruction format */
 asm.numberToTag = codeLine => codeLine.replace(/[0-9]+/g, asm.isDataInstruction(codeLine) ? 'data' : 'address');
 
+/* Converts a label to 'address' tag which is used in formal instruction format. 
+ * TODO: labels can also point to data, say by using EQU */
 asm.labelToTag = codeLine => asm.isLabelInstruction(codeLine) ? codeLine.replace(codeLine.split(' ').slice(-1), 'address') : codeLine;
 
 asm.getInstructionName = codeLine => { 
