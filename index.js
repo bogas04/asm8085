@@ -17,8 +17,20 @@ const iSet = require('./instructionSet');
 /* Assembles the given code into machine code */
 asm.assemble = (code) => {
   let assembledCode = [];
+  let labels = {};
   let codeLines = asm.decomment(code).split('\n').map(cl => cl.trim());
+  let startWith = 0;
 
+  /* Get all labels in labels obj */
+  codeLines.reduce((startWith, codeLine) => {
+    if(asm.isLabel(codeLine.split(' ')[0])) {
+      let hex = startWith.toString(16);
+      labels[codeLine.split(' ')[0].slice(0, -1)] = (hex + "").length !== 4 ? ("000" + hex).slice(-4) : hex;
+    }
+    return (startWith += asm.getInstructionSize(codeLine));
+  }, startWith);
+
+  /* Expand mnemonics, replace label tags with actual line number */
   codeLines.forEach((codeLine, index) => {
     let iName = asm.getInstructionName(codeLine);
     let iFormat = asm.sanitize(codeLine);
@@ -34,8 +46,13 @@ asm.assemble = (code) => {
         let lastOperand = asm.getInstructionOperands(codeLine);
         lastOperand = lastOperand[lastOperand.length - 1];
         assembledCode.push(iSet[iFormat].code);
-        assembledCode.push(lastOperand.slice(-2));
-        assembledCode.push(lastOperand.slice(-4, -2));
+        if(asm.isLabelInstruction(codeLine) && lastOperand in labels) {
+          assembledCode.push(labels[lastOperand].slice(-2));
+          assembledCode.push(labels[lastOperand].slice(-4, -2));
+        } else {
+          assembledCode.push(lastOperand.slice(-2));
+          assembledCode.push(lastOperand.slice(-4, -2));
+        }
         break;
     }
   });

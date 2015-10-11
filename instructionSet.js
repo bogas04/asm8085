@@ -200,7 +200,7 @@ module.exports = {
   },
   'CMP M': {
     'size': 1,
-    'code': 'BF',
+    'code': 'BE',
     'desc': 'Compare with Memory'
   },
   'CNC address': {
