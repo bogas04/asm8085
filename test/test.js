@@ -15,6 +15,9 @@ describe('asm', () => {
     it('should return "LOOP: ADI A,data" for "LOOP: ADI A,50"', () => {
       assert(asm.numberToTag('LOOP: ADI A,50') === 'LOOP: ADI A,data');
     });
+    it('should return "LOOP: ADI A,data" for "LOOP: ADI A,BC"', () => {
+      assert(asm.numberToTag('LOOP: ADI A,BC') === 'LOOP: ADI A,data');
+    });
     it('should return "LOOP: MOV A,B" for "LOOP: MOV A,B"', () => {
       assert(asm.numberToTag('LOOP: MOV A,B') === 'LOOP: MOV A,B');
     });
