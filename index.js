@@ -51,9 +51,7 @@ asm.getInstructionSize = codeLine => {
 asm.assemble = (code) => {
   let assembledCode = '';
   let codeLines = asm.decomment(code).split('\n').map(cl => cl.trim());
-  codeLines.forEach((value, index) => {
-
-  });
+  return codeLines.join('\n');
 };
 
 module.exports = asm;

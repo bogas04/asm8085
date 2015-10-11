@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Two pass assembler for 8085",
   "main": "index.js",
+  "bin": {
+    "asm8085": "cli.js"
+  },
   "scripts": {
     "test": "mocha"
   },
