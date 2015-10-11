@@ -483,7 +483,7 @@ module.exports = {
     'code': '21',
     'desc': 'Load Immediate HL'
   },
-  'LXI SP,n': {
+  'LXI SP,data': {
     'size': 3,
     'code': '31',
     'desc': 'Load Immediate Stack Ptr'
@@ -803,42 +803,42 @@ module.exports = {
     'code': '77',
     'desc': 'Move register to register'
   },
-  'MVI A,n': {
+  'MVI A,data': {
     'size': 2,
     'code': '3E',
     'desc': 'Move Immediate'
   },
-  'MVI B,n': {
+  'MVI B,data': {
     'size': 2,
     'code': '06',
     'desc': 'Move Immediate'
   },
-  'MVI C,n': {
+  'MVI C,data': {
     'size': 2,
     'code': '0E',
     'desc': 'Move Immediate'
   },
-  'MVI D,n': {
+  'MVI D,data': {
     'size': 2,
     'code': '16',
     'desc': 'Move Immediate'
   },
-  'MVI E,n': {
+  'MVI E,data': {
     'size': 2,
     'code': '1E',
     'desc': 'Move Immediate'
   },
-  'MVI H,n': {
+  'MVI H,data': {
     'size': 2,
     'code': '26',
     'desc': 'Move Immediate'
   },
-  'MVI L,n': {
+  'MVI L,data': {
     'size': 2,
     'code': '2E',
     'desc': 'Move Immediate'
   },
-  'MVI M,n': {
+  'MVI M,data': {
     'size': 2,
     'code': '36',
     'desc': 'Move Immediate to Memory'

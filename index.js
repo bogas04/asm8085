@@ -24,8 +24,9 @@ asm.assemble = (code) => {
   /* Get all labels in labels obj */
   codeLines.reduce((startWith, codeLine) => {
     if(asm.isLabel(codeLine.split(' ')[0])) {
-      let hex = startWith.toString(16);
-      labels[codeLine.split(' ')[0].slice(0, -1)] = (hex + "").length !== 4 ? ("000" + hex).slice(-4) : hex;
+      let label = codeLine.split(' ')[0].slice(0, -1);
+      let hex = startWith.toString(16).toUpperCase();
+      labels[label] = hex.length !== 4 ? ("000".concat(hex).slice(-4)): hex;
     }
     return (startWith += asm.getInstructionSize(codeLine));
   }, startWith);
@@ -34,18 +35,17 @@ asm.assemble = (code) => {
   codeLines.forEach((codeLine, index) => {
     let iName = asm.getInstructionName(codeLine);
     let iFormat = asm.sanitize(codeLine);
+    let operands = asm.getInstructionOperands(codeLine);
+    let lastOperand = operands[operands.length - 1];
+
+    assembledCode.push(iSet[iFormat].code);
+
     switch(asm.getInstructionSize(codeLine)) {
-      case 1: 
-        assembledCode.push(iSet[iFormat].code);
-        break;
       case 2:
         assembledCode.push(iSet[iFormat].code);
-        assembledCode.push(asm.getInstructionOperands(codeLine)[0]);
+        assembledCode.push(lastOperand);
         break;
       case 3:
-        let lastOperand = asm.getInstructionOperands(codeLine);
-        lastOperand = lastOperand[lastOperand.length - 1];
-        assembledCode.push(iSet[iFormat].code);
         if(asm.isLabelInstruction(codeLine) && lastOperand in labels) {
           assembledCode.push(labels[lastOperand].slice(-2));
           assembledCode.push(labels[lastOperand].slice(-4, -2));
