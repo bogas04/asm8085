@@ -1,27 +1,19 @@
 'use strict';
 
-/* Phases:
- * Decomment
- * First pass: 
- *   - Bloat each statement into hex bytes
- *   - Assign addresses to each line keeping their number of bytes in mind.
- *   - Perform some directives
- * Second pass: 
- *   - Replace labels with actual address
- */
-
 var asm = {};
 
 const iSet = require('./instructionSet');
 
 /* Assembles the given code into machine code */
 asm.assemble = (code) => {
-  let assembledCode = [];
   let labels = {};
-  let codeLines = asm.decomment(code).split('\n').map(cl => cl.trim());
   let startWith = 0;
+  let assembledCode = [];
 
-  /* Get all labels in labels obj */
+  /* Preprocessing : Decomment */
+  let codeLines = asm.decomment(code).split('\n').map(cl => cl.trim());
+
+  /* First Pass: Get all labels in labels obj */
   codeLines.reduce((startWith, codeLine) => {
     if(asm.isLabel(codeLine.split(' ')[0])) {
       let label = codeLine.split(' ')[0].slice(0, -1);
@@ -31,28 +23,21 @@ asm.assemble = (code) => {
     return (startWith += asm.getInstructionSize(codeLine));
   }, startWith);
 
-  /* Expand mnemonics, replace label tags with actual line number */
+  /* Second Pass: Expand mnemonics, replace label tags with actual line number */
   codeLines.forEach((codeLine, index) => {
-    let iName = asm.getInstructionName(codeLine);
     let iFormat = asm.sanitize(codeLine);
     let operands = asm.getInstructionOperands(codeLine);
     let lastOperand = operands[operands.length - 1];
 
+    /* First step for each instruction */
     assembledCode.push(iSet[iFormat].code);
 
     switch(asm.getInstructionSize(codeLine)) {
-      case 2:
-        assembledCode.push(iSet[iFormat].code);
-        assembledCode.push(lastOperand);
-        break;
+      case 2: assembledCode.push(lastOperand); break;
       case 3:
-        if(asm.isLabelInstruction(codeLine) && lastOperand in labels) {
-          assembledCode.push(labels[lastOperand].slice(-2));
-          assembledCode.push(labels[lastOperand].slice(-4, -2));
-        } else {
-          assembledCode.push(lastOperand.slice(-2));
-          assembledCode.push(lastOperand.slice(-4, -2));
-        }
+        lastOperand = (asm.isLabelInstruction(codeLine) && lastOperand in labels) ? labels[lastOperand] : lastOperand;
+        assembledCode.push(lastOperand.slice(-2));
+        assembledCode.push(lastOperand.slice(-4, -2));
         break;
     }
   });
