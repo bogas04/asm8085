@@ -30,7 +30,7 @@ npm test
 # Todo
 * [ ] Support for Directives like 
    - [x] # ORG 1234
-   - [ ]# DB 45,35,34,53,55
+   - [ ] # DB 45,35,34,53,55
 * [x] Support for labels
 * [x] Support for large portion of instruction set (pretty much everything)
 
