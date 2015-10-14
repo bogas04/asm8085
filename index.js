@@ -90,6 +90,9 @@ asm.isDBDirective = codeLine => codeLine.trim().startsWith('# DB');
 /* Checks whether given code line is an ORG directive */
 asm.isORGDirective = codeLine => codeLine.trim().startsWith('# ORG');
 
+/* Checks whether given code line is an DB directive */
+asm.isDBDirective = codeLine => codeLine.trim().startsWith('# DB');
+
 /* Checks validity of code line based on instruction set*/
 asm.isValidInstruction = codeLine => asm.sanitize(codeLine) in iSet;
 
@@ -98,6 +101,9 @@ asm.removeLabel = codeLine => codeLine.replace(/[a-zA-Z]+:/g, '').trim();
 
 /* Returns the decimal location where an ORG directive instruction points to */
 asm.getORGLocation = orgLine => parseInt(orgLine.replace('# ORG', '').trim(), 16);
+
+/* Returns array of data to be stored as per DB Directive */
+asm.getDBOperands = dbLine => dbLine.replace('# DB', '').split(',').map(e => e.trim());
 
 /* Returns the mnemonic of main instruction */
 asm.getInstructionName = codeLine => codeLine.split(' ')[(asm.isLabel(codeLine) ? 1 : 0)];

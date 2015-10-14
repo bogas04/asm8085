@@ -13,6 +13,17 @@ describe('asm', () => {
       assert(asm.isORGDirective('# ORG AB12') === true);
     });
   });
+  describe('getDBOperands', () => {
+    it('should return ["12","A3","62","6F"] for "# DB 12,   A3, 62, 6F   "', () => {
+      // TODO: Find better way to compare arrays
+      assert(asm.getDBOperands("# DB 12,   A3, 62, 6F   ").toString() === ['12', 'A3', '62', '6F'].toString());
+    });
+  });
+  describe('isDBDirective()', () => {
+    it('should return true for "# DB AB,12"', () => {
+      assert(asm.isDBDirective('# DB AB,12') === true);
+    });
+  });
   describe('isLabel()', () => {
     it('should return true for "abcd:"', () => {
       assert(asm.isLabel('abcd:') === true);
