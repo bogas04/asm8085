@@ -5,7 +5,8 @@ var asm = {};
 const iSet = require('./instructionSet');
 
 /* Assembles the given code into machine code */
-asm.assemble = (code) => {
+asm.assemble = (code, showAddress) => {
+  showAddress = showAddress || false;
   let labels = {};
   let startWith = 0;
   let assembledCode = [];
@@ -15,40 +16,42 @@ asm.assemble = (code) => {
 
   /* First Pass: Get all labels in labels obj */
   codeLines.reduce((startWith, codeLine) => {
-    if(asm.isLabel(codeLine.split(' ')[0])) {
-      let label = codeLine.split(' ')[0].slice(0, -1);
-      let hex = startWith.toString(16).toUpperCase();
-      labels[label] = hex.length !== 4 ? ("000".concat(hex).slice(-4)): hex;
+    if(asm.isORGDirective(codeLine)) {
+      startWith = asm.getORGLocation(codeLine);
+    } else {
+      if(asm.isLabel(codeLine)) {
+        labels[asm.getLabel(codeLine)] = asm.toHex(startWith);
+      }
+      startWith += asm.getInstructionSize(codeLine);
     }
-    return (startWith += asm.getInstructionSize(codeLine));
+    return startWith;
   }, startWith);
 
   /* Second Pass: Expand mnemonics, replace label tags with actual line number */
+  startWith = -1;
   codeLines.forEach((codeLine, index) => {
-    let iFormat = asm.sanitize(codeLine);
-    let operands = asm.getInstructionOperands(codeLine);
-    let lastOperand = operands[operands.length - 1];
+    if(asm.isORGDirective(codeLine)) {
+      startWith = asm.getORGLocation(codeLine) - 1;
+    } else {
+      let iFormat = asm.sanitize(codeLine);
+      let operands = asm.getInstructionOperands(codeLine);
+      let lastOperand = operands[operands.length - 1];
 
-    /* First step for each instruction */
-    assembledCode.push(iSet[iFormat].code);
+      /* First step for each instruction */
+      assembledCode.push({ address: asm.toHex(++startWith), code: iSet[iFormat].code });
 
-    switch(asm.getInstructionSize(codeLine)) {
-      case 2: assembledCode.push(lastOperand); break;
-      case 3:
-        lastOperand = (asm.isLabelInstruction(codeLine) && lastOperand in labels) ? labels[lastOperand] : lastOperand;
-        assembledCode.push(lastOperand.slice(-2));
-        assembledCode.push(lastOperand.slice(-4, -2));
-        break;
+      switch(asm.getInstructionSize(codeLine)) {
+        case 2: assembledCode.push({ address: asm.toHex(++startWith), code: lastOperand }); break;
+        case 3:
+          lastOperand = (asm.isLabelInstruction(codeLine) && lastOperand in labels) ? labels[lastOperand] : lastOperand;
+          assembledCode.push({ address: asm.toHex(++startWith), code: lastOperand.slice(-2) });
+          assembledCode.push({ address: asm.toHex(++startWith), code: lastOperand.slice(-4, -2) });
+          break;
+      }
     }
   });
 
-  return assembledCode.join('\n');
-};
-
-/* Returns the mnemonic of main instruction */
-asm.getInstructionName = codeLine => { 
-  let cs = codeLine.split(' ');
-  return asm.isLabel(cs[0]) ? cs[1]: cs[0];
+  return assembledCode.reduce((string, value) => string += ((showAddress? (value.address + ' ') : '') + value.code + '\n'), '');
 };
 
 /* Returns the size (in bytes) of the instruction */
@@ -72,17 +75,35 @@ asm.numberToTag = codeLine => {
   return codeLine;
 };
 
-/* Tells whether first word is a label or not */
-asm.isLabel = firstWord => firstWord.endsWith(':');
-
 /* Remove comments, anything starting with ; */
 asm.decomment = code => code.replace(/(;.*)/g, '').trim();
+
+/* Tells whether given line has a label to it */
+asm.isLabel = codeLine => codeLine.split(' ')[0].endsWith(':');
+
+/* Returns label of a code line with a label to it */
+asm.getLabel = codeLine => codeLine.split(' ')[0].slice(0, -1);
+
+/* Checks whether given code line is a DB directive */
+asm.isDBDirective = codeLine => codeLine.trim().startsWith('# DB');
+
+/* Checks whether given code line is an ORG directive */
+asm.isORGDirective = codeLine => codeLine.trim().startsWith('# ORG');
 
 /* Checks validity of code line based on instruction set*/
 asm.isValidInstruction = codeLine => asm.sanitize(codeLine) in iSet;
 
 /* Removes label from a given code line, if any */
 asm.removeLabel = codeLine => codeLine.replace(/[a-zA-Z]+:/g, '').trim();
+
+/* Returns the decimal location where an ORG directive instruction points to */
+asm.getORGLocation = orgLine => parseInt(orgLine.replace('# ORG', '').trim(), 16);
+
+/* Returns the mnemonic of main instruction */
+asm.getInstructionName = codeLine => codeLine.split(' ')[(asm.isLabel(codeLine) ? 1 : 0)];
+
+/* Returns upper case hex string of 4 digits for given decimal number */
+asm.toHex = decimalNumber => ("000" + decimalNumber.toString(16).toUpperCase()).slice(-4);
 
 /* Converts a code line to formal instruction format as per Instruction Set */
 asm.sanitize = codeLine => asm.labelToTag(asm.numberToTag(asm.removeLabel(codeLine))).trim();

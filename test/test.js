@@ -3,6 +3,16 @@ var asm = require('../index');
 var fs = require('fs');
 
 describe('asm', () => {
+  describe('getORGLocation()', () => {
+    it('should return 43794 for "# ORG AB12"', () => {
+      assert(asm.getORGLocation('# ORG AB12') === 43794);
+    });
+  });
+  describe('isORGDirective()', () => {
+    it('should return true for "# ORG AB12"', () => {
+      assert(asm.isORGDirective('# ORG AB12') === true);
+    });
+  });
   describe('isLabel()', () => {
     it('should return true for "abcd:"', () => {
       assert(asm.isLabel('abcd:') === true);
@@ -98,9 +108,15 @@ describe('asm', () => {
   describe('assemble()', () => {
     it('should assemble add8bit.asm (basic program) correctly', () => {
       assert(asm.assemble(fs.readFileSync('programs/add8bit.asm', 'utf8')).trim() === fs.readFileSync('test/add8bit.asm', 'utf8').trim());
+      assert(asm.assemble(fs.readFileSync('programs/add8bit.asm', 'utf8'), true).trim() === fs.readFileSync('test/add8bitWithAddress.asm', 'utf8').trim());
     });
     it('should assemble bubbleSort.asm (with labels, jumps etc) correctly', () => {
       assert(asm.assemble(fs.readFileSync('programs/bubbleSort.asm', 'utf8')).trim() === fs.readFileSync('test/bubbleSort.asm', 'utf8').trim());
+      assert(asm.assemble(fs.readFileSync('programs/bubbleSort.asm', 'utf8'), true).trim() === fs.readFileSync('test/bubbleSortWithAddress.asm', 'utf8').trim());
+    });
+    it('should assemble test.asm (Test for ORG) correctly', () => {
+      assert(asm.assemble(fs.readFileSync('programs/test.asm', 'utf8')).trim() === fs.readFileSync('test/test.asm', 'utf8').trim());
+      assert(asm.assemble(fs.readFileSync('programs/test.asm', 'utf8'), true).trim() === fs.readFileSync('test/testWithAddress.asm', 'utf8').trim());
     });
   });
 });
