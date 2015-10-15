@@ -27,6 +27,8 @@ asm.assemble = (code, showAddress) => {
     return startWith;
   }, startWith);
 
+  // console.log(labels);l
+
   /* Second Pass: Expand mnemonics, replace label tags with actual line number */
   startWith = -1;
   codeLines.forEach((codeLine, index) => {
